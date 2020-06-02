@@ -63,7 +63,7 @@ def queued_work(in_queue):
 
 
 if __name__ == "__main__":
-    num_workers = 6
+    num_workers = cpu_count()
 
     manager = Manager()
 
