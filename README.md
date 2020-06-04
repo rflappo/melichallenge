@@ -15,6 +15,7 @@ Suggested prerequisite
 ### Clone the repo
 ```bash
 git clone https://github.com/rflappo/melichallenge.git
+cd melichallenge
 ```
 
 ### Running
