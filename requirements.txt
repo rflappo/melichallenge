@@ -1,4 +1,6 @@
+psycopg2==2.8.4
 flask==1.1.2
 flask-sqlalchemy==2.4.3
 configparser==5.0.0
 requests==2.23.0
+

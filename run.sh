@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+docker ps
 
 export FLASK_APP='app.__init__.py'
 export APP_SETTINGS='app.config.DevelopmentConfig'
