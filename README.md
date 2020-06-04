@@ -44,7 +44,7 @@ docker-compose -f docker-compose.yml up -d --build
 docker ps
 ```
 
-* Create your dev env. with `python=3.8` and:
+* Create your dev env. with `python=3.8` and activate it:
 > pip install -r requirements.txt
 
 *  Load the folowing env vars:
@@ -54,7 +54,6 @@ APP_SETTINGS='app.config.DevelopmentConfig'
 DATABASE_URL='postgres://melichallenge:melichallenge@127.0.0.1:54320/melichallenge'
 ```
 
-* Activate your dev env.
 * Run the app:
 ```bash
 python manage.py run
