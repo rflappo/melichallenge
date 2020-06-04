@@ -21,7 +21,14 @@ git clone https://github.com/rflappo/melichallenge.git
 If with `mini-conda` and on `linux`:
 * Just for the first time:
 ```bash
-sudo chmod +x set-up.sh && sudo chmod +x run.sh
+docker-compose -f docker-compose.yml up -d --build
+
+conda create --name meli-challenge python=3.8 pip
+conda activate meli-challenge
+
+pip install -r requirements.txt
+
+sudo chmod +x run.sh
 ./set-up.sh
 ```
 * To run the app:
