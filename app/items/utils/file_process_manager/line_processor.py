@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 class LineProcessor():
-    def __init__(self, line, db_session=None):
+    def __init__(self, line):
         Session = sessionmaker(bind=db.get_engine())
         self.db_session = Session()
 
