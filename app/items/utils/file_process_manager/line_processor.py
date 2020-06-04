@@ -1,15 +1,17 @@
 from app.services.api_client import MeliApiClient
 from app.model import Item
+from app.data import db
+from sqlalchemy.orm import sessionmaker
 
 
 class LineProcessor():
     def __init__(self, line, db_session=None):
-        self.db_session = db_session
+        Session = sessionmaker(bind=db.get_engine())
+        self.db_session = Session()
+
         self.client = MeliApiClient()
 
         self.line = line.decode('utf-8')
-        site, id = self.line.strip('\r\n').split(',')
-        self.item = Item.get_or_create_item(site=site, id=id, db_session=self.db_session)
 
     def _get_and_set_item_currency(self, currency_id):
         currency_data = self.client.get_currency(currency_id)
@@ -27,6 +29,9 @@ class LineProcessor():
             return category_data.get('name')
 
     def process_line(self):
+        site, id = self.line.strip('\r\n').split(',')
+        self.item = Item.get_or_create_item(site=site, id=id, db_session=self.db_session)
+
         item_data = self.client.get_item(f"{self.item.site}{self.item.id}")
         if item_data.get('error') is None:
             self.item.price = item_data.get('price')
@@ -43,6 +48,8 @@ class LineProcessor():
 
             self.db_session.merge(self.item)
             self.db_session.commit()
+        
+        self.db_session.close()
 
     def __str__(self):
         return str(self.item)

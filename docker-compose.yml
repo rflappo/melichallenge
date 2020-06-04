@@ -1,0 +1,19 @@
+version: "3.6"
+
+services:
+  meli-challenge-db:
+    container_name: meli-challenge-db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    ports:
+      - 54320:5432 # expose ports - HOST:CONTAINER
+    environment:
+      - POSTGRES_USER=melichallenge
+      - POSTGRES_PASSWORD=melichallenge
+    restart: always
+    healthcheck:
+      test: pg_isready -U melichallenge || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5

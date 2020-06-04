@@ -1,1 +1,0 @@
-docker run -it -p 54320:5432 --name meli-challenge-db -e POSTGRES_PASSWORD=melichallenge -e POSTGRES_USER=melichallenge -e POSTGRES_DB=melichallenge -d postgres:9.6
