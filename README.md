@@ -72,7 +72,7 @@ For `csv` or `txt` formats, where lines are parsed simply by splitting, you shou
 ### Examples
 
 
-* For csv: `parserconfig.ini`
+* For **csv**: `parserconfig.ini`
 ```inifile
 [FILE]
 ENCODING = utf-8
@@ -87,7 +87,7 @@ METHOD = None
 ```
 
 
-* For csv: `parserconfig.ini`
+* For **jsonl**: `parserconfig.ini`
 ```inifile
 [FILE]
 ENCODING = utf-8
