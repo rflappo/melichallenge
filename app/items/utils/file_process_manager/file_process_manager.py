@@ -1,35 +1,7 @@
-import os
 from itertools import chain
-from configparser import ConfigParser
 from multiprocessing import Process, Manager, cpu_count
-
+from app.items.utils.file_process_manager.parsers_config import FileParserConfig
 from app.items.utils.file_process_manager.line_processor import LineProcessor
-
-
-class FileParserConfig:
-    def __init__(self):
-        config = ConfigParser()
-        config_file = os.path.join(os.getcwd(), 'parserconfig.ini')
-        config.read(config_file)
-
-        self.settings = {}
-        if 'FILE' in config.sections():
-            self.settings = config['FILE']
-
-    def file_with_headers(self):
-        if 'HEADERS_LINE' in self.settings.keys():
-            return self.settings['HEADERS_LINE'].lower() == 'true'
-        return False
-
-    def get_encoding(self):
-        if 'ENCODING' in self.settings.keys():
-            return self.settings['ENCODING'].lower()
-        return 'utf-8'
-
-    def get_allowed_extension(self):
-        if 'EXTENSION' in self.settings.keys():
-            return self.settings['EXTENSION'].lower()
-        return 'text'
 
 
 class ExtensionError(Exception):
