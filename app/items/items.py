@@ -15,7 +15,11 @@ def uploader():
         return jsonify({'BadRequest': 'Please send a file'}), 400
 
     request.files['file'].seek(0)
-    file_processor = ItemsFileProcessManager(request.files['file'])
+    try:
+        file_processor = ItemsFileProcessManager(request.files['file'])
+    except:
+        return jsonify({'BadRequest': 'File extension not allow'}), 400
+    
     file_processor.run()
 
     return jsonify({'message': 'File processed successfully'}), 200
