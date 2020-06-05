@@ -91,7 +91,6 @@ METHOD = None
 ```inifile
 [FILE]
 ENCODING = utf-8
-HEADERS_LINE = true
 EXTENSION = jsonl
 
 [LINE]
