@@ -68,3 +68,34 @@ There is a file to config how the parsing will work.
 
 For extensions like `jsonl` (json line), or any extension that makes the line a little harder to parse, you can use `MODULE` and `METHOD` vars to specify a python module's methods to use when parsing the line.
 For `csv` or `txt` formats, where lines are parsed simply by splitting, you should set the `SEPARATOR` value. Please remove `MODULE` & `METHOD` vars or set them with "None".
+
+### Examples
+
+
+* For csv: `parserconfig.ini`
+```inifile
+[FILE]
+ENCODING = utf-8
+HEADERS_LINE = true
+EXTENSION = csv
+
+[LINE]
+SEPARATOR = ,
+LINE_FEED = unix
+MODULE = None
+METHOD = None
+```
+
+
+* For csv: `parserconfig.ini`
+```inifile
+[FILE]
+ENCODING = utf-8
+HEADERS_LINE = true
+EXTENSION = jsonl
+
+[LINE]
+LINE_FEED = unix
+MODULE = json
+METHOD = loads
+```
