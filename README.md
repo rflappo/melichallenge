@@ -39,14 +39,14 @@ pip install -r requirements.txt
 --------
 
 3. Run the app:
-  1. Load the folowing env vars:
+ > Load the folowing env vars:
 ```
 FLASK_APP='app.__init__.py'
 APP_SETTINGS='app.config.DevelopmentConfig'
 DATABASE_URL='postgres://melichallenge:melichallenge@127.0.0.1:54320/melichallenge'
 ```
 
-  2. Run the app:
+> Run the app:
 ```bash
 python manage.py run
 ```
