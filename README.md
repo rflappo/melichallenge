@@ -57,3 +57,11 @@ sudo chmod +x run.sh
 ./run.sh
 ```
 --------
+--------
+# About the configs
+There is a file to config how the parsing will work.
+> parserconfig.ini
+`EXTENSION` will set the expected/allowed extension for the file
+
+For extensions like `jsonl` (json line), or any extension that makes the line a little harder to parse, you can use `MODULE` and `METHOD` vars to specify a python modules methods to use when parsing the line.
+For `csv` or `txt` formats, where lines are parsed simply by splitting, you should set the `SEPARATOR` value. Please remove `MODULE` & `METHOD` vars or set them with "None".
