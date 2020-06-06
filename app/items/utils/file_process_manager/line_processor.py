@@ -1,3 +1,4 @@
+import asyncio
 from app.services.api_client import MeliApiClient
 from app.model import Item
 from app.data import db
@@ -39,23 +40,50 @@ class LineProcessor():
 
         return data
 
-    def _get_and_set_item_currency(self, currency_id):
+    def _get_and_set_item_currency(self, currency_id, item):
         currency_data = self.client.get_currency(currency_id)
+        value = None
         if currency_data.get('error') is None:
-            return currency_data['description']
-        return None
+            value = currency_data['description']
+        item.description = value
 
-    def _get_and_set_item_seller(self, seller_id):
+    def _get_and_set_item_seller(self, seller_id, item):
         seller_data = self.client.get_user(seller_id)
+        value = None
         if seller_data.get('error') is None:
-            return seller_data.get('nickname')
-        return None
+            value = seller_data.get('nickname')
+        item.nickname = value
 
-    def _get_and_set_item_category(self, category_id):
+    def _get_and_set_item_category(self, category_id, item):
         category_data = self.client.get_category(category_id)
+        value = None
         if category_data.get('error') is None:
-            return category_data.get('name')
-        return None
+            value = category_data.get('name')
+        item.name = value
+
+    async def _extra_seeder_loop(self, from_api, item):
+        loop = asyncio.get_event_loop()
+        futures = list()
+
+        args = [
+            from_api.get('currency_id', '-1'),
+            from_api.get('seller_id', '-1'),
+            from_api.get('category_id', '-1')
+        ]
+
+        funcs = [
+            self._get_and_set_item_currency,
+            self._get_and_set_item_seller,
+            self._get_and_set_item_category
+        ]
+
+        for fn, arg in zip(funcs, args):
+            futures.append(
+                loop.run_in_executor(None, fn, *(arg, item))
+            )
+
+        for req in futures:
+            await req
 
     def _seed_item_from_api(self, item):
         from_api = self.client.get_item(f"{item.site}{item.id}")
@@ -63,22 +91,12 @@ class LineProcessor():
             item.price = from_api.get('price')
             item.start_time = from_api.get('start_time')
 
-            args = [
-                from_api.get('currency_id', '-1'),
-                from_api.get('seller_id', '-1'),
-                from_api.get('category_id', '-1')
-            ]
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-            funcs = [
-                self._get_and_set_item_currency,
-                self._get_and_set_item_seller,
-                self._get_and_set_item_category
-            ]
-
-            fields = ['name', 'nickname', 'description']
-
-            for attr, fn, arg in zip(fields, funcs, args):
-                setattr(item, attr, fn(arg))
+            loop.run_until_complete(
+                self._extra_seeder_loop(from_api, item)
+            )
 
             self.db_session.merge(item)
             self.db_session.commit()
