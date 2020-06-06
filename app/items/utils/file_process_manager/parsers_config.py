@@ -29,7 +29,7 @@ class FileParserConfig:
 
 
 class LineParserConfig:
-    def __init__(self):
+    def __init__(self, encoding='utf-8'):
         config = ConfigParser()
         config_file = os.path.join(os.getcwd(), 'parserconfig.ini')
         config.read(config_file)
@@ -37,6 +37,7 @@ class LineParserConfig:
         self.settings = {}
         if 'LINE' in config.sections():
             self.settings = config['LINE']
+        self.settings['ENCODING'] = encoding
     
     def get_line_feed(self):
         line_feed = '\n'
@@ -69,3 +70,6 @@ class LineParserConfig:
             parse_method = self.settings['METHOD'].lower()
 
         return parse_method
+
+    def get_parse_encoding(self):
+        return self.settings['ENCODING']

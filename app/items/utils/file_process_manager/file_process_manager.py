@@ -1,6 +1,7 @@
 from itertools import chain
 from multiprocessing import Process, Manager, cpu_count
 from app.items.utils.file_process_manager.parsers_config import FileParserConfig
+from app.items.utils.file_process_manager.parsers_config import LineParserConfig
 from app.items.utils.file_process_manager.line_processor import LineProcessor
 
 
@@ -32,14 +33,14 @@ class ItemsFileProcessManager():
         if file_ext is None or allowed_ext != file_ext:
             raise ExtensionError(file_ext)
 
-    def _queued_work(self):
+    def _queued_work(self, line_parser):
         while True:
             line = self.args_queue.get()
 
             if line:
                 line_process = LineProcessor(
                     line,
-                    encoding=self.config.get_encoding(),
+                    line_parser=line_parser,
                     header_line=self.headers
                 )
                 line_process.process_line()
@@ -48,8 +49,14 @@ class ItemsFileProcessManager():
                 break
     
     def _start_empty_processes(self):
+
         for _ in range(self.num_workers):
-            p = Process(target=self._queued_work)
+            p = Process(
+                target=self._queued_work,
+                args=(
+                    LineParserConfig(encoding=self.config.get_encoding()),
+                )
+            )
             p.start()
             self.pool.append(p)
     

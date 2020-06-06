@@ -2,11 +2,10 @@ from app.services.api_client import MeliApiClient
 from app.model import Item
 from app.data import db
 from sqlalchemy.orm import sessionmaker
-from app.items.utils.file_process_manager.parsers_config import LineParserConfig
 
 class LineProcessor():
-    def __init__(self, line, encoding, header_line=None):
-        self.config = LineParserConfig()
+    def __init__(self, line, line_parser, header_line=None):
+        self.config = line_parser
 
         Session = sessionmaker(bind=db.get_engine())
         self.db_session = Session()
@@ -14,7 +13,7 @@ class LineProcessor():
         self.client = MeliApiClient()
 
         self.header_line = self._clean_line(header_line) if header_line else header_line
-        self.line = line.decode(encoding)
+        self.line = line.decode(self.config.get_parse_encoding())
 
     def _clean_line(self, line):
         return line.strip(self.config.get_line_feed())
@@ -40,20 +39,23 @@ class LineProcessor():
 
         return data
 
-    def _get_and_set_item_currency(self, currency_id, item):
+    def _get_and_set_item_currency(self, currency_id):
         currency_data = self.client.get_currency(currency_id)
         if currency_data.get('error') is None:
-            item.description = currency_data['description']
+            return currency_data['description']
+        return None
 
-    def _get_and_set_item_seller(self, seller_id, item):
+    def _get_and_set_item_seller(self, seller_id):
         seller_data = self.client.get_user(seller_id)
         if seller_data.get('error') is None:
-            item.nickname = seller_data.get('nickname')
+            return seller_data.get('nickname')
+        return None
 
-    def _get_and_set_item_category(self, category_id, item):
+    def _get_and_set_item_category(self, category_id):
         category_data = self.client.get_category(category_id)
         if category_data.get('error') is None:
-            item.name = category_data.get('name')
+            return category_data.get('name')
+        return None
 
     def _seed_item_from_api(self, item):
         from_api = self.client.get_item(f"{item.site}{item.id}")
@@ -73,8 +75,10 @@ class LineProcessor():
                 self._get_and_set_item_category
             ]
 
-            for fn, arg in zip(funcs, args):
-                fn(arg, item)
+            fields = ['name', 'nickname', 'description']
+
+            for attr, fn, arg in zip(fields, funcs, args):
+                setattr(item, attr, fn(arg))
 
             self.db_session.merge(item)
             self.db_session.commit()
