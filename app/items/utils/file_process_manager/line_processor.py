@@ -85,36 +85,36 @@ class LineProcessor():
         for req in futures:
             await req
 
-    def _seed_item_from_api(self, item):
-        from_api = self.client.get_item(f"{item.site}{item.id}")
-        if from_api.get('error') is None:
-            item.price = from_api.get('price')
-            item.start_time = from_api.get('start_time')
+    def _seed_item_from_api(self, from_api, item):
+        item.price = from_api.get('price')
+        item.start_time = from_api.get('start_time')
 
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
 
-            loop.run_until_complete(
-                self._extra_seeder_loop(from_api, item)
-            )
+        loop.run_until_complete(
+            self._extra_seeder_loop(from_api, item)
+        )
 
-            self.db_session.merge(item)
-            self.db_session.commit()
+        self.db_session.merge(item)
+        self.db_session.commit()
 
     def _process_item_data(self, item_data):
         item_site = item_data.get('site')
         item_site = item_site if item_site else None
-
         item_id = item_data.get('id')
 
-        item = Item.get_or_create_item(
-            site=item_site,
-            id=item_id,
-            db_session=self.db_session
-        )
+        from_api = self.client.get_item(f"{item_site}{item_id}")
+        if from_api.get('error') is None:
 
-        if item:
-            self._seed_item_from_api(item)
+            item = Item.get_or_create_item(
+                site=item_site,
+                id=item_id,
+                db_session=self.db_session
+            )
+
+            if item:
+                self._seed_item_from_api(from_api, item)
 
     def process_line(self):
         data = self._parse_line()
