@@ -96,6 +96,8 @@ class LineProcessor():
             self._extra_seeder_loop(from_api, item)
         )
 
+        loop.close()
+
         self.db_session.merge(item)
         self.db_session.commit()
 
