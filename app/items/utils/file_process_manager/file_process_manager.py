@@ -34,6 +34,7 @@ class ItemsFileProcessManager():
             raise ExtensionError(file_ext)
 
     def _queued_work(self, line_parser):
+
         while True:
             line = self.args_queue.get()
 
@@ -47,7 +48,7 @@ class ItemsFileProcessManager():
 
             else:
                 break
-    
+
     def _start_empty_processes(self):
 
         for _ in range(self.num_workers):
@@ -59,7 +60,7 @@ class ItemsFileProcessManager():
             )
             p.start()
             self.pool.append(p)
-    
+
     def _seed_processes(self):
         iters = chain(self.data_file, (None,)*self.num_workers)
 
